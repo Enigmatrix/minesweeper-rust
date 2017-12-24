@@ -1,8 +1,10 @@
+#![feature(slice_patterns)]
 extern crate rand;
 extern crate piston;
 extern crate glutin_window;
 extern crate graphics;
 extern crate opengl_graphics;
+extern crate vecmath;
 
 use piston::window::*;
 use piston::event_loop::*;
@@ -11,22 +13,38 @@ use glutin_window::*;
 use opengl_graphics::*;
 
 mod gameboard;
+mod gameboardview;
+mod gameboardcontroller;
 
 use gameboard::*;
+use gameboardview::*;
+use gameboardcontroller::*;
 use std::io::*;
 
 fn main() {
-    println!("Hello, world!");
-    /*let opengl = OpenGL::V3_2;
+    let opengl = OpenGL::V3_2;
     let window_settings = WindowSettings::new("Minesweeper-Rust", [500; 2])
         .opengl(opengl);
     let mut window: GlutinWindow = window_settings.build()
         .expect("Window could not be created");
-    
-    let mut events = Events::new(EventSettings::new());
-    while let Some(e) = events.next(&mut window){
-        
-    }*/
+
+    let texture_settings = TextureSettings::new().filter(Filter::Nearest);
+    let glyphs = GlyphCache::new("assets/FiraSans-Regular.ttf", (), texture_settings)
+        .expect("Could not load font");
+
+    let api = GraphicsApi::opengl(GlGraphics::new(opengl), glyphs);
+
+    let board = Gameboard::new(9,9,10).unwrap();
+    let view = GameboardView::new(GameboardViewSettings::default(), api);
+    let mut controller = GameboardController::new(board, view);
+
+
+    let mut events = Events::new(EventSettings::new().lazy(true));
+    while let Some(input) = events.next(&mut window){
+        controller.process(input);
+    }
+
+    /*
     let mut game = Gameboard::new(9, 9, 10).unwrap();
     loop {
         let mut input = String::new();
@@ -52,7 +70,7 @@ fn main() {
             1 => game.flag_toggle(x, y),
             _ => println!("Invalid Option!")
         }
-    }
+    }*/
 }
 
 fn print_gameboard(g: &Gameboard) {
