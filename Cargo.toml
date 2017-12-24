@@ -3,4 +3,12 @@ name = "minesweeper-rust"
 version = "0.1.0"
 authors = ["Enigmatrix <enigmatrix2000@gmail.com>"]
 
+[[bin]]
+name = "minesweeper-rust"
+
 [dependencies]
+rand = "*"
+piston = "*"
+piston2d-graphics = "*"
+piston2d-opengl_graphics = "*"
+pistoncore-glutin_window = "*"
